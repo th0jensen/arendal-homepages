@@ -82,8 +82,8 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
 
   return (
     <div class="w-full">
-      <div class="sticky top-0 bg-white z-20 shadow-md mb-4">
-        <div class="w-full flex flex-col sm:flex-row justify-between items-stretch gap-4">
+      <div class="sticky top-0 bg-white z-20 mb-4">
+        <div class="w-full flex flex-col sm:flex-row justify-between items-stretch gap-4 p-4">
           <input
             type="text"
             value={searchText.value}
@@ -114,7 +114,7 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
         </div>
       </div>
       <div class="overflow-x-auto relative">
-        <table class="min-w-full bg-white border border-gray-300">
+        <table class="min-w-full bg-white border border-gray-300 p-4">
           <thead class="bg-gray-100 sticky z-10">
             <tr>
               <th 

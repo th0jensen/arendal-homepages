@@ -1,11 +1,18 @@
-import { type PageProps } from "$fresh/server.ts";
+import { type PageProps, type Handlers } from "$fresh/server.ts";
 import CompanyTable from "../islands/CompanyTable.tsx";
 import { type Company } from "../types/company.ts";
+import { handler as companiesHandler } from "./api/companies.ts";
 
-export default async function Home(props: PageProps) {
-  const url = new URL("/api/companies", props.url.origin ?? "http://localhost:8000");
-  const resp = await fetch(url.toString());
-  const companies: Company[] = await resp.json();
+export const handler: Handlers = {
+  async GET(_req, ctx) {
+    const resp = await companiesHandler(_req, ctx);
+    const companies: Company[] = await resp.json();
+    return ctx.render({ companies });
+  },
+};
+
+export default function Home(props: PageProps<{ companies: Company[] }>) {
+  const { companies } = props.data;
 
   return (
     <div class="min-h-screen p-2 sm:p-4 mx-auto max-w-screen flex flex-col">
