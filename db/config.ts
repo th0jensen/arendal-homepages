@@ -1,5 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 
 const connString = Deno.env.get("SUPABASE_URL")!
 
-export const db = drizzle(connString);
+const queryClient = postgres(connString)
+export const db = drizzle({ client: queryClient});
