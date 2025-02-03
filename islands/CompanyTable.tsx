@@ -1,8 +1,8 @@
-import { type Company } from "../types/company.ts";
+import { type Company } from "../db/schema.ts";
 import { humanReadableTimestamp } from "jsr:@blaze/human-readable-timestamp";
 import { useSignal } from "@preact/signals";
 
-export default function CompanyTable({ companies }: { companies: Company[] }) {
+export default function CompanyTable({ companies = [] }: { companies: Company[] }) {
   const searchText = useSignal('');
   const currentFilter = useSignal('all');
   const businessTypeFilter = useSignal('all');
@@ -10,11 +10,13 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
   const sortDirection = useSignal<'asc' | 'desc'>('asc');
 
   const getUniqueBusinessTypes = () => {
+    if (!Array.isArray(companies)) return ['all'];
     const types = Array.from(new Set(companies.map(company => company.businessType || 'Unknown'))).sort();
     return ['all', ...types];
   };
 
   const filteredData = () => {
+    if (!Array.isArray(companies)) return [];
     let filtered = [...companies];
     
     if (currentFilter.value === 'with') {
@@ -44,9 +46,9 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
         const bValue = b[sortColumn.value as keyof Company];
         
         if (sortColumn.value === 'stiftelsesdato') {
-          if (!aValue && !bValue) return 0;
-          if (!aValue) return 1;
-          if (!bValue) return -1;
+          if (aValue === 'No date found' && bValue === 'No date found') return 0;
+          if (aValue === 'No date found') return 1;
+          if (bValue === 'No date found') return 1;
           
           const dateA = new Date(aValue).getTime();
           const dateB = new Date(bValue).getTime();
@@ -80,6 +82,8 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
     currentFilter.value = filterValue;
   };
 
+  const data = filteredData();
+
   return (
     <div class="w-full">
       <div class="sticky top-0 bg-white z-20 mb-4">
@@ -88,7 +92,7 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
             type="text"
             value={searchText.value}
             onInput={(e) => searchText.value = (e.target as HTMLInputElement).value}
-            placeholder={`Search ${filteredData().length} companies...`}
+            placeholder={`Search ${data.length} companies...`}
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
           />
           <div class="flex gap-2 w-full sm:w-auto sm:flex-nowrap">
@@ -166,12 +170,11 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
                     </option>
                   ))}
                 </select>
-
               </th>
             </tr>
           </thead>
           <tbody>
-            {filteredData().map((company) => (
+            {data.map((company) => (
               <tr key={company.name} class={`hover:bg-gray-50 ${company.webpage !== 'No website' ? 'bg-blue-50' : ''}`}>
                 <td class="px-6 py-4 border-b">
                   {company.name}
@@ -186,7 +189,7 @@ export default function CompanyTable({ companies }: { companies: Company[] }) {
                   )}
                 </td>
                 <td class="px-6 py-4 border-b">
-                  {company.stiftelsesdato ? 
+                  {company.stiftelsesdato !== "No date found" ? 
                     humanReadableTimestamp(new Date(company.stiftelsesdato)) : 
                     'No date found'}
                 </td>

@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS companies (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  webpage VARCHAR(255) NOT NULL DEFAULT 'No website',
+  stiftelsesdato VARCHAR(10) NOT NULL DEFAULT 'No date found',
+  ansatte INTEGER NOT NULL DEFAULT 0,
+  business_type VARCHAR(255) NOT NULL DEFAULT 'Not specified',
+  last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

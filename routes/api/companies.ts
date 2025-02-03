@@ -1,29 +1,26 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { type Company, type BrregCompany } from "../../types/company.ts";
-import { ensureFile, exists } from "https://deno.land/std@0.204.0/fs/mod.ts";
+import type { BrregCompany, Company } from "../../db/schema.ts";
+import { db } from "../../db/config.ts";
+import { CompanyValidator, BrregCompanyValidator, companySchema } from "../../db/schema.ts";
+import { eq } from "drizzle-orm";
 
 function normalizeWebsiteUrl(url: string): string {
   if (!url) return 'No website';
   
-  // Remove any existing protocol
   let cleanUrl = url.replace(/^(https?:\/\/)?/, '');
-  
-  // Remove trailing slashes
   cleanUrl = cleanUrl.replace(/\/$/, '');
   
-  // Add www if it's not present and the URL doesn't start with www
   if (!cleanUrl.startsWith('www.')) {
     cleanUrl = 'www.' + cleanUrl;
   }
   
-  // Add https protocol
   return 'https://' + cleanUrl;
 }
 
 const BRREG_API = "https://data.brreg.no/enhetsregisteret/api/enheter";
 const ARENDAL_KOMMUNE = "4203";
 
-async function fetchArendalCompanies(): Promise<Company[]> {
+async function fetchArendalCompanies() {
   const companies: Company[] = [];
   let page = 0;
   const size = 100;
@@ -41,24 +38,33 @@ async function fetchArendalCompanies(): Promise<Company[]> {
       }
 
       const data = await response.json();
-      const brregCompanies: BrregCompany[] = data._embedded?.enheter || [];
+      if (!data._embedded?.enheter) {
+        console.error('Invalid API response format');
+        break;
+      }
+
+      let brregCompanies: BrregCompany[];
+      try {
+        brregCompanies = data._embedded.enheter.map((company: BrregCompany) => BrregCompanyValidator.parse(company));
+      } catch (error) {
+        console.error('Data validation error:', error);
+        continue;
+      }
 
       if (brregCompanies.length === 0) {
         break;
       }
 
       for (const company of brregCompanies) {
-        if (!company.konkurs || !company.underAvvikling || !company.underTvangsavviklingEllerTvangsopplosning) {
-            const webpage = company.hjemmeside
-              ? normalizeWebsiteUrl(company.hjemmeside)
-              : 'No website';
-            companies.push({
-              name: company.navn,
-              webpage,
-              stiftelsesdato: company.stiftelsesdato,
-              ansatte: parseInt(company.antallAnsatte) || 0,
-              businessType: company.naeringskode1?.beskrivelse || 'Not specified'
-            });
+        if (!company.konkurs && !company.underAvvikling && !company.underTvangsavviklingEllerTvangsopplosning) {
+          const companyData = CompanyValidator.parse({
+            name: company.navn,
+            webpage: company.hjemmeside ? normalizeWebsiteUrl(company.hjemmeside) : 'No website',
+            stiftelsesdato: company.stiftelsesdato || "No date found",
+            ansatte: company.antallAnsatte || 0,
+            businessType: company.naeringskode1?.beskrivelse || 'Not specified'
+          });
+          companies.push(companyData);
         }
       }
 
@@ -72,34 +78,22 @@ async function fetchArendalCompanies(): Promise<Company[]> {
   return companies;
 }
 
-const CACHE_FILE = "./companies.json";
-
-async function readCache(): Promise<Company[] | null> {
+async function updateCompaniesCache(companies: Company[]) {
   try {
-    if (await exists(CACHE_FILE)) {
-      const content = await Deno.readTextFile(CACHE_FILE);
-      return JSON.parse(content) as Company[];
-    }
+    await db.delete(companySchema).where(eq(companySchema.name, companySchema.name));
+    await db.insert(companySchema).values(companies);
   } catch (error) {
-    console.error('Error reading cache:', error);
-  }
-  return null;
-}
-
-async function writeCache(companies: Company[]): Promise<void> {
-  try {
-    await ensureFile(CACHE_FILE);
-    await Deno.writeTextFile(CACHE_FILE, JSON.stringify(companies, null, 2));
-  } catch (error) {
-    console.error('Error writing cache:', error);
+    console.error('Error updating cache:', error);
+    throw error;
   }
 }
 
 export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Response> => {
   try {
-    // First try to read from cache synchronously
-    const cachedData = await readCache();
-    if (cachedData) {
+    // First try to read from cache
+    const cachedData = await db.select().from(companySchema).orderBy(companySchema.name);
+    
+    if (cachedData && cachedData.length > 0) {
       // Return cached data immediately
       const response = new Response(JSON.stringify(cachedData), {
         headers: { 
@@ -112,7 +106,7 @@ export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Resp
       queueMicrotask(async () => {
         try {
           const freshData = await fetchArendalCompanies();
-          await writeCache(freshData);
+          await updateCompaniesCache(freshData);
         } catch (error) {
           console.error('Background fetch error:', error);
         }
@@ -123,7 +117,7 @@ export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Resp
 
     // If no cache exists, fetch fresh data
     const companies = await fetchArendalCompanies();
-    await writeCache(companies);
+    await updateCompaniesCache(companies);
 
     return new Response(JSON.stringify(companies), {
       headers: { 

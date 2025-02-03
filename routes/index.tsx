@@ -1,6 +1,6 @@
 import { type PageProps, type Handlers } from "$fresh/server.ts";
 import CompanyTable from "../islands/CompanyTable.tsx";
-import { type Company } from "../types/company.ts";
+import { type Company } from "../db/schema.ts";
 import { handler as companiesHandler } from "./api/companies.ts";
 
 export const handler: Handlers = {
