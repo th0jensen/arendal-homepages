@@ -72,7 +72,7 @@ async function fetchArendalCompanies(): Promise<Company[]> {
   return companies;
 }
 
-const CACHE_FILE = "./cache/companies.json";
+const CACHE_FILE = "./companies.json";
 
 async function readCache(): Promise<Company[] | null> {
   try {
