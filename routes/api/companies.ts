@@ -96,32 +96,39 @@ async function writeCache(companies: Company[]): Promise<void> {
 }
 
 export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Response> => {
-  // First try to serve cached data
-  const cachedData = await readCache();
-  if (cachedData) {
-    // Start fetching fresh data in the background
-    fetchArendalCompanies()
-      .then(writeCache)
-      .catch(error => console.error('Background fetch error:', error));
-
-    // Immediately return cached data
-    return new Response(JSON.stringify(cachedData), {
-      headers: { 
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=3600"
-      },
-    });
-  }
-
-  // If no cache exists, fetch fresh data
   try {
+    // First try to read from cache synchronously
+    const cachedData = await readCache();
+    if (cachedData) {
+      // Return cached data immediately
+      const response = new Response(JSON.stringify(cachedData), {
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, must-revalidate"
+        },
+      });
+
+      // Then start background refresh
+      queueMicrotask(async () => {
+        try {
+          const freshData = await fetchArendalCompanies();
+          await writeCache(freshData);
+        } catch (error) {
+          console.error('Background fetch error:', error);
+        }
+      });
+
+      return response;
+    }
+
+    // If no cache exists, fetch fresh data
     const companies = await fetchArendalCompanies();
     await writeCache(companies);
 
     return new Response(JSON.stringify(companies), {
       headers: { 
         "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=3600"
+        "Cache-Control": "no-cache, must-revalidate"
       },
     });
   } catch (error) {
