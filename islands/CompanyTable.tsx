@@ -1,4 +1,4 @@
-import { type Company } from "../db/schema.ts";
+import { type CompanySelect as Company } from "../db/schema.ts";
 import { humanReadableTimestamp } from "jsr:@blaze/human-readable-timestamp";
 import { useSignal } from "@preact/signals";
 
@@ -175,7 +175,7 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
           </thead>
           <tbody>
             {data.map((company) => (
-              <tr key={company.name} class={`hover:bg-gray-50 ${company.webpage !== 'No website' ? 'bg-blue-50' : ''}`}>
+              <tr key={company.id} class={`hover:bg-gray-50 ${company.webpage !== 'No website' ? 'bg-blue-50' : ''}`}>
                 <td class="px-6 py-4 border-b">
                   {company.name}
                 </td>

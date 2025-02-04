@@ -5,6 +5,7 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_companies from "./routes/api/companies.ts";
+import * as $api_trpc_trpc_ from "./routes/api/trpc/[trpc].ts";
 import * as $index from "./routes/index.tsx";
 import * as $CompanyTable from "./islands/CompanyTable.tsx";
 import * as $Counter from "./islands/Counter.tsx";
@@ -15,6 +16,7 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/api/companies.ts": $api_companies,
+    "./routes/api/trpc/[trpc].ts": $api_trpc_trpc_,
     "./routes/index.tsx": $index,
   },
   islands: {

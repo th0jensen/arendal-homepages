@@ -24,6 +24,8 @@
     "**/_fresh/*"
   ],
   "imports": {
+    "@trpc/client": "npm:@trpc/client@^10.45.2",
+    "@trpc/server": "npm:@trpc/server@^10.45.2",
     "postgres": "npm:postgres@^3.4.5",
     "react": "npm:@preact/compat",
     "react-dom": "npm:@preact/compat",
