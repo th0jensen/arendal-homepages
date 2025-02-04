@@ -22,6 +22,6 @@ export const trpcClient = createTRPCProxyClient<AppRouter>({
 
 function getBaseUrl() {
   if (typeof globalThis.location !== 'undefined') return globalThis.location.origin
-  if (Deno.env.get("DENO_URL")) return `https://${Deno.env.get("DENO_URL")}`
+  if (Deno.env.get("DEPLOY_URL")) return `https://${Deno.env.get("DEPLOY_URL")}`
   return `http://localhost:${Deno.env.get("PORT") ?? 8000}`
 }
