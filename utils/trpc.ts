@@ -12,7 +12,7 @@ export const appRouter = router({
   getCompanies: publicProcedure
     .query(async () => {
       const companies = await db.select().from(companySchema);
-      return companies as CompanySelect[];
+      return companies;
     }),
 });
 
