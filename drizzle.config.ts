@@ -1,11 +1,10 @@
-import { defineConfig } from "drizzle-kit";
+import type { Config } from "npm:drizzle-kit";
 
-export default defineConfig({
-  dialect: "postgresql",
+export default {
   schema: "./db/schema.ts",
   out: "./db/migrations",
+  dialect: "postgresql",
   dbCredentials: {
-    url: Deno.env.get("SUPABASE_URL")!,
-    ssl: { rejectUnauthorized: false }
+    url: Deno.env.get("SUPABASE_URL") || "",
   },
-});
+} satisfies Config;
