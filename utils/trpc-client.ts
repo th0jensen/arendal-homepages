@@ -7,14 +7,7 @@ export const trpcClient = createTRPCProxyClient<AppRouter>({
       url: getBaseUrl() + '/api/trpc',
       headers: {
         'Content-Type': 'application/json',
-        "Cache-Control": "no-cache, public, must-revalidate, max-age=0",
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Keep-Alive': 'timeout=5, max=1000',
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Pragma': 'no-cache',
-        'Expires': '0'
+        'Accept': 'application/json'
       }
     }),
   ],
