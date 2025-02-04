@@ -1,7 +1,6 @@
 import { initTRPC } from '@trpc/server';
-import { CompanyValidator, type CompanySelect } from '../db/schema.ts';
+import { type CompanySelect } from '../db/schema.ts';
 import { db } from '../db/config.ts';
-import CompanyTable from "../islands/CompanyTable.tsx";
 import { companySchema } from "../db/schema.ts";
 
 const t = initTRPC.create();

@@ -1,17 +1,27 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import type { AppRouter } from './trpc.ts';
 
-const getBaseUrl = () => {
-  if (typeof window !== 'undefined') {
-    return globalThis.location.origin;
-  }
-  return 'http://localhost:8000';
-};
-
 export const trpcClient = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: `${getBaseUrl()}/api/trpc`,
+      url: getBaseUrl() + '/api/trpc',
+      headers: {
+        'Content-Type': 'application/json',
+        "Cache-Control": "no-cache, public, must-revalidate, max-age=0",
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Keep-Alive': 'timeout=5, max=1000',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     }),
   ],
 });
+
+function getBaseUrl() {
+  if (typeof globalThis.location !== 'undefined') return globalThis.location.origin
+  if (Deno.env.get("DENO_URL")) return `https://${Deno.env.get("DENO_URL")}`
+  return `http://localhost:${Deno.env.get("PORT") ?? 8000}`
+}
