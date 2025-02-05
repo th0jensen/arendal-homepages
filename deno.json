@@ -24,11 +24,7 @@
     "**/_fresh/*"
   ],
   "imports": {
-    "@trpc/client": "npm:@trpc/client@^10.45.2",
-    "@trpc/server": "npm:@trpc/server@^10.45.2",
     "postgres": "npm:postgres@^3.4.5",
-    "react": "npm:@preact/compat",
-    "react-dom": "npm:@preact/compat",
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "preact": "https://esm.sh/preact@10.22.0",
     "preact/": "https://esm.sh/preact@10.22.0/",
@@ -46,7 +42,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   },
-  "nodeModulesDir": "auto",
+  "nodeModulesDir": "none",
   "deploy": {
     "project": "4fe401e1-bf72-4bf1-a51b-414d3b0942a3",
     "exclude": [
