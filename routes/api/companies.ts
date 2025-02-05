@@ -91,7 +91,7 @@ async function updateCompaniesCache(companies: Company[]) {
 export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Response> => {
   try {
     // First try to read from cache
-    const cachedData = await db.select().from(companySchema).orderBy(companySchema.name);
+    const cachedData = (await db.select().from(companySchema).orderBy(companySchema.name)).filter(company => !company.name.toLowerCase().includes("konkurs"));
     
     if (cachedData && cachedData.length > 0) {
       // Return cached data immediately

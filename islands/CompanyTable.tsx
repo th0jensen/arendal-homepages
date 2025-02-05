@@ -98,30 +98,30 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
           <div class="flex gap-2 w-full sm:w-auto sm:flex-nowrap">
             <button
               onClick={() => handleFilterClick('all')}
-              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${
+              class={`px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 flex-1 sm:w-24 ${
                 currentFilter.value === 'all'
                   ? 'bg-blue-500 dark:bg-blue-900 text-white dark:text-gray-200'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+                  : 'bg-white dark:bg-[#212121] text-gray-700 dark:text-gray-300 hover:bg-[#303030]'
               }`}
             >
               All
             </button>
             <button
               onClick={() => handleFilterClick('with')}
-              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${
+              class={`px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 flex-1 sm:w-24 ${
                 currentFilter.value === 'with'
                   ? 'bg-blue-500 dark:bg-blue-900 text-white dark:text-gray-200'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+                  : 'bg-white dark:bg-[#212121] text-gray-700 dark:text-gray-300 hover:bg-[#303030]'
               }`}
             >
               Websites
             </button>
             <button
               onClick={() => handleFilterClick('without')}
-              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${
+              class={`px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 flex-1 sm:w-24 ${
                 currentFilter.value === 'without'
                   ? 'bg-blue-500 dark:bg-blue-900 text-white dark:text-gray-200'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+                  : 'bg-white dark:bg-[#212121] text-gray-700 dark:text-gray-300 hover:bg-[#303030]'
               }`}
             >
               None
