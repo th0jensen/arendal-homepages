@@ -86,31 +86,43 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
 
   return (
     <div class="w-full">
-      <div class="sticky top-0 bg-white z-20 mb-4">
-        <div class="w-full flex flex-col sm:flex-row justify-between items-stretch gap-4 p-4">
+      <div class="sticky top-0 z-20 mb-4">
+        <div class="w-full flex flex-col sm:flex-row justify-between items-stretch gap-4 p-4 dark:bg-[#191919]">
           <input
             type="text"
             value={searchText.value}
             onInput={(e) => searchText.value = (e.target as HTMLInputElement).value}
             placeholder={`Search ${data.length} companies...`}
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-[#212121] text-gray-700 dark:text-gray-300"
           />
           <div class="flex gap-2 w-full sm:w-auto sm:flex-nowrap">
             <button
               onClick={() => handleFilterClick('all')}
-              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${currentFilter.value === 'all' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${
+                currentFilter.value === 'all'
+                  ? 'bg-blue-500 dark:bg-blue-900 text-white dark:text-gray-200'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+              }`}
             >
               All
             </button>
             <button
               onClick={() => handleFilterClick('with')}
-              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${currentFilter.value === 'with' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${
+                currentFilter.value === 'with'
+                  ? 'bg-blue-500 dark:bg-blue-900 text-white dark:text-gray-200'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+              }`}
             >
               Websites
             </button>
             <button
               onClick={() => handleFilterClick('without')}
-              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${currentFilter.value === 'without' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+              class={`px-4 py-2 rounded-lg border flex-1 sm:w-24 ${
+                currentFilter.value === 'without'
+                  ? 'bg-blue-500 dark:bg-blue-900 text-white dark:text-gray-200'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
+              }`}
             >
               None
             </button>
@@ -118,11 +130,11 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
         </div>
       </div>
       <div class="overflow-x-auto relative">
-        <table class="min-w-full bg-white border border-gray-300 p-4">
-          <thead class="bg-gray-100 sticky z-10">
+        <table class="min-w-full bg-white dark:bg-[#212121] border border-gray-300 dark:border-gray-600 dark:text-gray-300 p-4">
+          <thead class="bg-gray-100 dark:bg-[#212121] sticky z-10">
             <tr>
               <th 
-                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 w-[15%]"
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[15%]"
                 onClick={() => handleSort('name')}
               >
                 Company Name
@@ -131,7 +143,7 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
                 )}
               </th>
               <th 
-                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 w-[15%]"
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[15%]"
                 onClick={() => handleSort('webpage')}
               >
                 Website
@@ -140,7 +152,7 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
                 )}
               </th>
               <th 
-                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 w-[12%]"
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[12%]"
                 onClick={() => handleSort('stiftelsesdato')}
               >
                 Establishment Date
@@ -149,7 +161,7 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
                 )}
               </th>
               <th 
-                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 w-[8%]"
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[8%]"
                 onClick={() => handleSort('ansatte')}
               >
                 Employees
@@ -175,28 +187,30 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
           </thead>
           <tbody>
             {data.map((company) => (
-              <tr key={company.id} class={`hover:bg-gray-50 ${company.webpage !== 'No website' ? 'bg-blue-50' : ''}`}>
-                <td class="px-6 py-4 border-b">
+              <tr key={company.id} class={`hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                company.webpage !== 'No website' ? 'bg-blue-50 dark:bg-blue-900' : ''
+              }`}>
+                <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.name}
                 </td>
-                <td class="px-6 py-4 border-b">
+                <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.webpage === 'No website' ? (
                     company.webpage
                   ) : (
-                    <a href={company.webpage} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline truncate block max-w-[18ch]">
+                    <a href={company.webpage} target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline truncate block max-w-[18ch]">
                       {company.webpage.replace('https://www.', '')}
                     </a>
                   )}
                 </td>
-                <td class="px-6 py-4 border-b">
+                <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.stiftelsesdato !== "No date found" ? 
                     humanReadableTimestamp(new Date(company.stiftelsesdato)) : 
                     'No date found'}
                 </td>
-                <td class="px-6 py-4 border-b">
+                <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.ansatte}
                 </td>
-                <td class="px-6 py-4 border-b">
+                <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.businessType}
                 </td>
               </tr>
