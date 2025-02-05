@@ -3,7 +3,6 @@ import type { BrregCompany, Company } from "../../db/schema.ts";
 import { db } from "../../db/config.ts";
 import { CompanyValidator, BrregCompanyValidator, companySchema } from "../../db/schema.ts";
 import { eq } from "drizzle-orm";
-import CompanyTable from "../../islands/CompanyTable.tsx";
 
 function normalizeWebsiteUrl(url: string): string {
   if (!url) return 'No website';
@@ -126,14 +125,18 @@ export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Resp
     return new Response(JSON.stringify(companies), {
       headers: { 
         "Content-Type": "application/json",
-        "Cache-Control": "no-cache, must-revalidate"
+        "Cache-Control": "no-cache, must-revalidate",
+        'Content-Encoding': 'gzip'
       },
     });
   } catch (error) {
     console.error('Error in companies handler:', error);
     return new Response(JSON.stringify({ error: 'Failed to fetch companies' }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        'Content-Encoding': 'gzip'
+      },
     });
   }
 };
