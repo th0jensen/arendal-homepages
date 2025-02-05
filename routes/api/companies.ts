@@ -101,7 +101,8 @@ export const handler = async (_req: Request, _ctx: HandlerContext): Promise<Resp
       const response = new Response(JSON.stringify(cachedData), {
         headers: { 
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache, must-revalidate"
+          "Cache-Control": "no-cache, must-revalidate",
+          'Content-Encoding': 'gzip'
         },
       });
 
