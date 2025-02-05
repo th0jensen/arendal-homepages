@@ -10,9 +10,19 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
   const sortDirection = useSignal<'asc' | 'desc'>('asc');
 
   const getUniqueBusinessTypes = () => {
-    if (!Array.isArray(companies)) return ['all'];
-    const types = Array.from(new Set(companies.map(company => company.businessType || 'Unknown'))).sort();
-    return ['all', ...types];
+    if (!Array.isArray(companies)) return [{ type: 'all', code: 'all' }];
+    const types = Array.from(
+      new Set(
+        companies.map(company => JSON.stringify({
+          type: company.businessType || 'Unknown',
+          code: company.businessTypeCode || 'N/A'
+        }))
+      )
+    )
+    .map(str => JSON.parse(str))
+    .sort((a, b) => a.type.localeCompare(b.type));
+    
+    return [{ type: 'all', code: 'all' }, ...types];
   };
 
   const filteredData = () => {
@@ -133,8 +143,22 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
         <table class="min-w-full bg-white dark:bg-[#212121] border border-gray-300 dark:border-gray-600 dark:text-gray-300 p-4">
           <thead class="bg-gray-100 dark:bg-[#212121] sticky z-10">
             <tr>
+              <th class="px-6 py-3 border-b text-left w-[10ch] min-w-[10ch] max-w-[10ch]">                
+                <select
+                  value={businessTypeFilter.value}
+                  onChange={(e: Event) => businessTypeFilter.value = (e.target as HTMLSelectElement).value}
+                  class="bg-transparent border-none cursor-pointer focus:outline-none w-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {getUniqueBusinessTypes().map((item) => (
+                    <option key={item.type} value={item.type}>
+                      {item.type === 'all' ? 'All' : `${item.type}`}
+                    </option>
+                  ))}
+                </select>
+              </th>
               <th 
-                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[15%]"
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-full"
                 onClick={() => handleSort('name')}
               >
                 Company Name
@@ -152,11 +176,11 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
                 )}
               </th>
               <th 
-                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[12%]"
-                onClick={() => handleSort('stiftelsesdato')}
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[15%]"
+                onClick={() => handleSort('email')}
               >
-                Establishment Date
-                {sortColumn.value === 'stiftelsesdato' && (
+                Email
+                {sortColumn.value === 'email' && (
                   <span class="ml-2">{sortDirection.value === 'asc' ? '↑' : '↓'}</span>
                 )}
               </th>
@@ -169,19 +193,14 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
                   <span class="ml-2">{sortDirection.value === 'asc' ? '↑' : '↓'}</span>
                 )}
               </th>
-              <th class="px-6 py-3 border-b text-left w-[30%]">
-                <select
-                  value={businessTypeFilter.value}
-                  onChange={(e: Event) => businessTypeFilter.value = (e.target as HTMLSelectElement).value}
-                  class="bg-transparent border-none cursor-pointer focus:outline-none w-full"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {getUniqueBusinessTypes().map((type) => (
-                    <option key={type} value={type}>
-                      {type === 'all' ? 'All Business Types' : type}
-                    </option>
-                  ))}
-                </select>
+              <th 
+                class="px-6 py-3 border-b text-left cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 w-[12%]"
+                onClick={() => handleSort('stiftelsesdato')}
+              >
+                Establishment Date
+                {sortColumn.value === 'stiftelsesdato' && (
+                  <span class="ml-2">{sortDirection.value === 'asc' ? '↑' : '↓'}</span>
+                )}
               </th>
             </tr>
           </thead>
@@ -190,6 +209,11 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
               <tr key={company.id} class={`hover:bg-gray-50 dark:hover:bg-gray-700 ${
                 company.webpage !== 'No website' ? 'bg-blue-50 dark:bg-blue-900' : ''
               }`}>
+                <td class="px-6 py-4 border-b dark:border-gray-600 w-[10ch] min-w-[10ch] max-w-[10ch] truncate">
+                <a class="truncate block" title={company.businessType}>
+                  {company.businessTypeCode}
+                </a>
+                </td>
                 <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.name}
                 </td>
@@ -203,15 +227,21 @@ export default function CompanyTable({ companies = [] }: { companies: Company[] 
                   )}
                 </td>
                 <td class="px-6 py-4 border-b dark:border-gray-600">
-                  {company.stiftelsesdato !== "No date found" ? 
-                    humanReadableTimestamp(new Date(company.stiftelsesdato)) : 
-                    'No date found'}
+                  {company.email === 'No email found' ? (
+                    company.email
+                  ) : (
+                    <a href={`mailto:${company.email}`} class="text-blue-600 dark:text-blue-400 hover:underline truncate block max-w-[18ch]">
+                      {company.email}
+                    </a>
+                  )}
                 </td>
                 <td class="px-6 py-4 border-b dark:border-gray-600">
                   {company.ansatte}
                 </td>
                 <td class="px-6 py-4 border-b dark:border-gray-600">
-                  {company.businessType}
+                  {company.stiftelsesdato !== "No date found" ? 
+                    humanReadableTimestamp(new Date(company.stiftelsesdato)) : 
+                    'No date found'}
                 </td>
               </tr>
             ))}

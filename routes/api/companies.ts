@@ -3,6 +3,7 @@ import type { BrregCompany, Company } from "../../db/schema.ts";
 import { db } from "../../db/config.ts";
 import { CompanyValidator, BrregCompanyValidator, companySchema } from "../../db/schema.ts";
 import { eq } from "drizzle-orm";
+import CompanyTable from "../../islands/CompanyTable.tsx";
 
 function normalizeWebsiteUrl(url: string): string {
   if (!url) return 'No website';
@@ -61,8 +62,10 @@ async function fetchArendalCompanies() {
             name: company.navn,
             webpage: company.hjemmeside ? normalizeWebsiteUrl(company.hjemmeside) : 'No website',
             stiftelsesdato: company.stiftelsesdato || "No date found",
+            email: company.epostadresse,
             ansatte: company.antallAnsatte || 0,
-            businessType: company.naeringskode1?.beskrivelse || 'Not specified'
+            businessType: company.organisasjonsform?.beskrivelse || 'Not specified',
+            businessTypeCode: company.organisasjonsform?.kode || 'N/A'
           });
           companies.push(companyData);
         }

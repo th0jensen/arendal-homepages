@@ -42,7 +42,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   },
-  "nodeModulesDir": "none",
+  "nodeModulesDir": "auto",
   "deploy": {
     "project": "4fe401e1-bf72-4bf1-a51b-414d3b0942a3",
     "exclude": [
